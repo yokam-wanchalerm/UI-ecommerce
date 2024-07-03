@@ -1,12 +1,12 @@
 import React, { useRef, useState, useEffect } from "react";
-import useAuth from "../hooks/useAuth";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import AuthClient from "../api/AuthClient";
 import TokenHelper from "../util/TokenHelper";
+import useCommon from "../hooks/useCommon";
 
 const Login = () => {
-  const { setAuth } = useAuth();
+  const { setProfile } = useCommon();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -21,16 +21,20 @@ const Login = () => {
 
   useEffect(() => {
     if (TokenHelper.isAuthenticated()) {
-      var payload = TokenHelper.parseJwt(TokenHelper.getToken());
-      setAuth({ role: payload?.role });
-      navigate("/");
+      navigate("/logout");
     }
-    userRef.current.focus();
   }, []);
 
   useEffect(() => {
     setErrMsg("");
   }, [user, pwd]);
+
+  const checkAutenticated = (accessToken) => {
+    var payload = TokenHelper.parseJwt(accessToken);
+    console.log(payload);
+    const fullName = payload?.firstName + " " + payload?.lastName;
+    setProfile(fullName);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,9 +43,7 @@ const Login = () => {
       const response = await AuthClient.login(user, pwd);
       const accessToken = response?.data?.accessToken;
       if (accessToken) {
-        var payload = TokenHelper.parseJwt(accessToken);
-        console.log(payload);
-        setAuth({ user, pwd, accessToken, role: payload?.role });
+        checkAutenticated(accessToken);
         localStorage.setItem("token", accessToken);
       }
       setUser("");
@@ -62,83 +64,65 @@ const Login = () => {
   };
 
   return (
-    <section>
-      <div className="auth-container">
-        <h2>Login</h2>
-        {errMsg && (
-          <p className="error-message" ref={errRef}>
-            {errMsg}
-          </p>
-        )}
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Email: </label>
-            <input
-              ref={userRef}
-              type="email"
-              value={user}
-              onChange={(e) => setUser(e.target.value)}
-              required
-            />
+    <div class="page-content page-container" id="page-content">
+      <div class="padding">
+        <div class="row">
+          <div class="col-md-3"></div>
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-header">
+                <strong>Login to your account</strong>
+              </div>
+              <div class="card-body">
+                {errMsg && (
+                  <div ref={errRef} class="alert alert-danger" role="alert">
+                    {errMsg}
+                  </div>
+                )}
+                <form onSubmit={handleSubmit}>
+                  <div class="form-group mb-18">
+                    <label class="text-muted" for="email">
+                      Email address
+                    </label>
+                    <input
+                      ref={userRef}
+                      id="email"
+                      class="form-control"
+                      type="email"
+                      value={user}
+                      placeholder="Email"
+                      onChange={(e) => setUser(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div class="form-group mb-18">
+                    <label class="text-muted" for="password">
+                      Password
+                    </label>
+                    <input
+                      type="password"
+                      id="password"
+                      class="form-control"
+                      value={pwd}
+                      onChange={(e) => setPwd(e.target.value)}
+                      required
+                      placeholder="Password"
+                    />{" "}
+                    <small id="passwordHelp" class="form-text text-muted">
+                      your password is saved in encrypted form
+                    </small>
+                  </div>
+                  <button type="submit" class="btn btn-primary mt-50">
+                    Login
+                  </button>
+                </form>
+              </div>
+            </div>
           </div>
-          <div className="form-group">
-            <label>Password: </label>
-            <input
-              type="password"
-              value={pwd}
-              onChange={(e) => setPwd(e.target.value)}
-              required
-            />
-          </div>
-          <button type="submit">Login</button>
-        </form>
-        <p>
-          Need an Account?
-          <br />
-          <button type="button" onClick={() => navigate("/register")}>
-            Sign Up
-          </button>
-        </p>
+          <div class="col-md-3"></div>
+        </div>
       </div>
-
-      {/* <p
-        ref={errRef}
-        className={errMsg ? "errmsg" : "offscreen"}
-        aria-live="assertive"
-      >
-        {errMsg}
-      </p>
-      <h1>Sign In</h1>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="username">Username:</label>
-        <input
-          type="text"
-          id="username"
-          ref={userRef}
-          autoComplete="off"
-          onChange={(e) => setUser(e.target.value)}
-          value={user}
-          required
-        />
-
-        <label htmlFor="password">Password:</label>
-        <input
-          type="password"
-          id="password"
-          onChange={(e) => setPwd(e.target.value)}
-          value={pwd}
-          required
-        />
-        <button>Sign In</button>
-      </form>
-      <p>
-        Need an Account?
-        <br />
-        <span className="line">
-          <Link to="/register">Sign Up</Link>
-        </span>
-      </p> */}
-    </section>
+    </div>
   );
 };
 

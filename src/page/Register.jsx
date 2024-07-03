@@ -16,6 +16,7 @@ const Register = () => {
   const navigate = useNavigate();
   const [success, setSuccess] = useState("");
   const [errMsg, setErrMsg] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -32,6 +33,7 @@ const Register = () => {
       return;
     }
     try {
+      setLoading(true);
       const response = await AuthClient.register(
         formData.email,
         formData.password,
@@ -41,6 +43,7 @@ const Register = () => {
 
       console.log(JSON.stringify(response?.data));
       setSuccess(true);
+      setLoading(true);
     } catch (err) {
       if (!err?.response) {
         setErrMsg("No Server Response");
@@ -55,80 +58,113 @@ const Register = () => {
 
   return (
     <>
-      <section>
-        <p
-          className={errMsg ? "error-message" : "offscreen"}
-          aria-live="assertive"
-        >
-          {errMsg}
-        </p>
-        <div className="auth-container">
-          {!success ? (
-            <>
-              <h2>Registration</h2>
-              <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                  <label>First Name:</label>
-                  <input
-                    type="text"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleInputChange}
-                    required
-                  />
+      <div class="page-content page-container" id="page-content">
+        <div class="padding">
+          <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+              {success ? (
+                <div class="card">
+                  <div class="card-header">Register Success</div>
+                  <div class="card-body">
+                    <button
+                      type="submit"
+                      class="btn btn-primary"
+                      onClick={() => navigate("/login")}
+                    >
+                      Login
+                    </button>
+                  </div>
                 </div>
-                <div className="form-group">
-                  <label>Last Name:</label>
-                  <input
-                    type="text"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleInputChange}
-                    required
-                  />
+              ) : (
+                <div class="card">
+                  <div class="card-header">
+                    <strong>Register your account</strong>
+                  </div>
+                  <div class="card-body">
+                    {errMsg && (
+                      <div ref={errRef} class="alert alert-danger" role="alert">
+                        {errMsg}
+                      </div>
+                    )}
+                    <form onSubmit={handleSubmit}>
+                      <div class="form-group mb-18">
+                        <label class="text-muted" for="firstName">
+                          First Name
+                        </label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          name="firstName"
+                          value={formData.firstName}
+                          onChange={handleInputChange}
+                          required
+                          placeholder="Enter First Name"
+                        />
+                      </div>
+                      <div class="form-group mb-18">
+                        <label class="text-muted" for="lastName">
+                          Last Name
+                        </label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          name="lastName"
+                          value={formData.lastName}
+                          onChange={handleInputChange}
+                          required
+                          placeholder="Enter Last Name"
+                        />
+                      </div>
+                      <div class="form-group mb-18">
+                        <label class="text-muted" for="email">
+                          Email
+                        </label>
+                        <input
+                          type="email"
+                          class="form-control"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleInputChange}
+                          required
+                          placeholder="Enter Email"
+                        />
+                      </div>
+                      <div class="form-group mb-18">
+                        <label class="text-muted" for="password">
+                          Password
+                        </label>
+                        <input
+                          type="password"
+                          class="form-control"
+                          name="password"
+                          value={formData.password}
+                          onChange={handleInputChange}
+                          required
+                          placeholder="Enter Password"
+                        />
+                      </div>
+
+                      <button type="submit" class="btn btn-primary">
+                        Register
+                        {loading && (
+                          <div
+                            class="spinner-border text-secondary"
+                            role="status"
+                          >
+                            <span class="sr-only">Loading...</span>
+                          </div>
+                        )}
+                      </button>
+                    </form>
+                  </div>
                 </div>
-                <div className="form-group">
-                  <label>Email:</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Password:</label>
-                  <input
-                    type="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <button type="submit">Register</button>
-              </form>
-              <p>
-                Already registered?
-                <br />
-                <button type="button" onClick={() => navigate("/login")}>
-                  Sign In
-                </button>
-              </p>
-            </>
-          ) : (
-            <>
-              <h1>Success!</h1>
-              <p>
-                <button type="button" onClick={() => navigate("/login")}>
-                  Sign In
-                </button>
-              </p>
-            </>
-          )}
+              )}
+            </div>
+            <div class="col-md-3"></div>
+          </div>
         </div>
-      </section>
+      </div>
     </>
   );
 };
