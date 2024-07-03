@@ -1,9 +1,9 @@
-import { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import useAuth from "../hooks/useAuth";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
-import axios from "../api/axios";
-const LOGIN_URL = "/auth/login";
+import AuthClient from "../api/AuthClient";
+import TokenHelper from "../util/TokenHelper";
 
 const Login = () => {
   const { setAuth } = useAuth();
@@ -20,6 +20,11 @@ const Login = () => {
   const [errMsg, setErrMsg] = useState("");
 
   useEffect(() => {
+    if (TokenHelper.isAuthenticated()) {
+      var payload = TokenHelper.parseJwt(TokenHelper.getToken());
+      setAuth({ role: payload?.role });
+      navigate("/");
+    }
     userRef.current.focus();
   }, []);
 
@@ -31,19 +36,14 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post(
-        LOGIN_URL,
-        JSON.stringify({ user, pwd }),
-        {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        }
-      );
-      console.log(JSON.stringify(response?.data));
-      //console.log(JSON.stringify(response));
+      const response = await AuthClient.login(user, pwd);
       const accessToken = response?.data?.accessToken;
-      const roles = response?.data?.roles;
-      setAuth({ user, pwd, roles, accessToken });
+      if (accessToken) {
+        var payload = TokenHelper.parseJwt(accessToken);
+        console.log(payload);
+        setAuth({ user, pwd, accessToken, role: payload?.role });
+        localStorage.setItem("token", accessToken);
+      }
       setUser("");
       setPwd("");
       navigate(from, { replace: true });
@@ -63,7 +63,45 @@ const Login = () => {
 
   return (
     <section>
-      <p
+      <div className="auth-container">
+        <h2>Login</h2>
+        {errMsg && (
+          <p className="error-message" ref={errRef}>
+            {errMsg}
+          </p>
+        )}
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>Email: </label>
+            <input
+              ref={userRef}
+              type="email"
+              value={user}
+              onChange={(e) => setUser(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Password: </label>
+            <input
+              type="password"
+              value={pwd}
+              onChange={(e) => setPwd(e.target.value)}
+              required
+            />
+          </div>
+          <button type="submit">Login</button>
+        </form>
+        <p>
+          Need an Account?
+          <br />
+          <button type="button" onClick={() => navigate("/register")}>
+            Sign Up
+          </button>
+        </p>
+      </div>
+
+      {/* <p
         ref={errRef}
         className={errMsg ? "errmsg" : "offscreen"}
         aria-live="assertive"
@@ -99,7 +137,7 @@ const Login = () => {
         <span className="line">
           <Link to="/register">Sign Up</Link>
         </span>
-      </p>
+      </p> */}
     </section>
   );
 };
