@@ -1,18 +1,17 @@
-import React, { useState } from "react";
-import TokenHelper from "../util/TokenHelper";
+import React from "react";
 import { Link } from "react-router-dom";
+import UserService from "../service/UserService";
 
-const Navbar = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    TokenHelper.isAuthenticated()
-  );
-  const isAdmin = TokenHelper.isAdmin();
+function Navbar() {
+  const isAuthenticated = UserService.isAuthenticated();
+  const isAdmin = UserService.isAdmin();
+
   const handleLogout = () => {
     const confirmDelete = window.confirm(
       "Are you sure you want to logout this user?"
     );
     if (confirmDelete) {
-      TokenHelper.logout();
+      UserService.logout();
     }
   };
 
@@ -26,7 +25,7 @@ const Navbar = () => {
         )}
         {isAuthenticated && (
           <li>
-            <Link to="/">Profile</Link>
+            <Link to="/profile">Profile</Link>
           </li>
         )}
         {isAdmin && (
@@ -44,6 +43,6 @@ const Navbar = () => {
       </ul>
     </nav>
   );
-};
+}
 
 export default Navbar;
