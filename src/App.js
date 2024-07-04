@@ -15,6 +15,7 @@ import { useEffect } from "react";
 import useCommon from "./hooks/useCommon";
 import TokenHelper from "./util/TokenHelper";
 import User from "./page/user/User";
+import UserAdd from "./page/user/UserAdd";
 
 function App() {
   const { setProfile } = useCommon();
@@ -33,6 +34,7 @@ function App() {
         {/* we want to protect these routes */}
         <Route element={<RequireAuth />}>
           <Route path="/users" element={<UserList />} />
+          <Route path="/user" element={<UserAdd />} />
           <Route path="/user/:id" element={<User page={"view"} />} />
           <Route path="/user/edit/:id" element={<User page={"edit"} />} />
         </Route>

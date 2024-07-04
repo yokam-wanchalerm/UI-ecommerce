@@ -11,10 +11,8 @@ const Product = () => {
   const [loading, setLoading] = useState(false);
 
   const addProduct = (product) => {
-    // Check product is exists
     const exist = cardItems.find((x) => x.id === product.id);
     if (exist) {
-      // Increase Quantity
       const newResult = cardItems.map((x) =>
         x.id === product.id
           ? { ...x, qty: x.qty + 1, sub_total: (x.qty + 1) * x.price }
@@ -45,7 +43,6 @@ const Product = () => {
       setLoading(false);
     };
     getProduct();
-    console.log("aa");
   }, []);
 
   const Loading = () => {

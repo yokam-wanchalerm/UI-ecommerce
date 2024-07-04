@@ -15,13 +15,25 @@ const Login = () => {
 
   const userRef = useRef();
   const errRef = useRef();
-
-  const [user, setUser] = useState("");
-  const [pwd, setPwd] = useState("");
   const [errMsg, setErrMsg] = useState("");
+
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    role: "",
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
   const isAuthenticated = () => {
     return !!localStorage.getItem("token");
   };
+
   useEffect(() => {
     if (isAuthenticated()) {
       navigate("/logout");
@@ -30,7 +42,7 @@ const Login = () => {
 
   useEffect(() => {
     setErrMsg("");
-  }, [user, pwd]);
+  }, [formData]);
 
   const checkAutenticated = (accessToken) => {
     setProfile(TokenHelper.getFullName(accessToken));
@@ -40,13 +52,18 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const response = await AuthClient.login(user, pwd);
+      const response = await AuthClient.login(formData);
       const accessToken = response?.data?.data?.accessToken;
       if (accessToken) {
         localStorage.setItem("token", accessToken);
         checkAutenticated(accessToken);
-        setUser("");
-        setPwd("");
+        setFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          password: "",
+          role: "",
+        });
         navigate(from, { replace: true });
       } else {
         setErrMsg("Login Failed");
@@ -93,9 +110,10 @@ const Login = () => {
                       id="email"
                       class="form-control"
                       type="email"
-                      value={user}
+                      name="email"
+                      value={formData.email}
                       placeholder="Email"
-                      onChange={(e) => setUser(e.target.value)}
+                      onChange={handleInputChange}
                       required
                     />
                   </div>
@@ -106,9 +124,10 @@ const Login = () => {
                     <input
                       type="password"
                       id="password"
+                      name="password"
                       class="form-control"
-                      value={pwd}
-                      onChange={(e) => setPwd(e.target.value)}
+                      value={formData.password}
+                      onChange={handleInputChange}
                       required
                       placeholder="Password"
                     />

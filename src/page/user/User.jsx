@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import UserClient from "../../api/UserClient";
-import { NavLink, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Skeleton from "react-loading-skeleton";
 
 const User = ({ page }) => {
@@ -40,10 +40,7 @@ const User = ({ page }) => {
   };
 
   useEffect(() => {
-    console.log(page);
-    if (data?.id !== id) {
-      getUserDetail(id);
-    }
+    getUserDetail(id);
   }, []);
 
   useEffect(() => {
@@ -57,6 +54,12 @@ const User = ({ page }) => {
     }
   }, [data]);
 
+  useEffect(() => {
+    if (mode !== "edit") {
+      getUserDetail(id);
+    }
+  }, [mode]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -69,6 +72,9 @@ const User = ({ page }) => {
       const response = await UserClient.updateUser(id, formData);
       if (response?.data?.data) {
         setSuccess(true);
+        setTimeout(() => {
+          setSuccess(false);
+        }, 2000);
         setMode("view");
       } else {
         setErrMsg("Update Failed");
@@ -120,7 +126,7 @@ const User = ({ page }) => {
   return (
     <div class="container">
       <div class="container-xl px-4 mt-4">
-        <div class="row">
+        <div class="row mb-2">
           <div class="col-xl-6">
             <nav aria-label="breadcrumb">
               <ol class="breadcrumb">
@@ -133,7 +139,7 @@ const User = ({ page }) => {
               </ol>
             </nav>
           </div>
-          <div class="col-xl-6">
+          <div class="col-md-6 d-flex flex-row justify-content-end p-1 ">
             {isViewMode ? (
               <button
                 type="button"
@@ -156,7 +162,12 @@ const User = ({ page }) => {
               </button>
             )}
 
-            <button type="button" class="btn btn-danger" onClick={deleteUser}>
+            <button
+              type="button"
+              style={{ marginLeft: "10px" }}
+              class="btn btn-danger"
+              onClick={deleteUser}
+            >
               Delete
             </button>
           </div>
@@ -167,7 +178,7 @@ const User = ({ page }) => {
           ) : (
             <>
               <div class="col-xl-4">
-                <div class="card mb-4 mb-xl-0">
+                <div class="card mb-4 mb-xl-0" style={{ height: "100%" }}>
                   <div class="card-header">Profile Picture</div>
                   <div class="card-body text-center">
                     <img
@@ -179,7 +190,7 @@ const User = ({ page }) => {
                 </div>
               </div>
               <div class="col-xl-8">
-                <div class="card mb-4">
+                <div class="card mb-4" style={{ height: "100%" }}>
                   <div class="card-header">Account Details</div>
                   <div class="card-body">
                     {errMsg && (

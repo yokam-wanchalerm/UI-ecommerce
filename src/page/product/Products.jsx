@@ -76,10 +76,10 @@ const Products = () => {
             Electronincs
           </button>
         </div>
-        {filter.map((product) => {
+        {filter.map((product, index) => {
           return (
             <>
-              <div className="col-md-3 mb-4">
+              <div className="col-md-3 mb-4" key={`product${index}`}>
                 <div className="card h-100 text-center p-4" key={product.id}>
                   <img
                     src={product.image}

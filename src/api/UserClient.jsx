@@ -1,8 +1,6 @@
 import axios from "./Axios";
 
 const ADMIN = "/admin";
-const ADMIN_USER = "/adminuser";
-const USER_PROFILE_URL = `${ADMIN_USER}/profile`;
 const ADMIN_USER_URL = `${ADMIN}/user`;
 
 class UserClient {

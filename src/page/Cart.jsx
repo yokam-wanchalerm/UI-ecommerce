@@ -1,4 +1,3 @@
-// import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import CartProduct from "./cart/CartProduct";
 import useCommon from "../hooks/useCommon";

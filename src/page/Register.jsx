@@ -1,6 +1,6 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import AuthClient from "../api/AuthClient";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import banner11 from "../assets/banner/banner11.jpg";
 
 const USER_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -18,6 +18,20 @@ const Register = () => {
   const [errMsg, setErrMsg] = useState("");
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    setErrMsg("");
+  }, [formData]);
+
+  useEffect(() => {
+    setFormData({
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      role: "USER",
+    });
+  }, [success]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -25,7 +39,6 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // if button enabled with JS hack
     const v1 = USER_REGEX.test(formData.email);
     const v2 = PWD_REGEX.test(formData.password);
     if (!v1 || !v2) {
@@ -34,14 +47,12 @@ const Register = () => {
     }
     try {
       setLoading(true);
-      const response = await AuthClient.register(
-        formData.email,
-        formData.password,
-        formData.firstName,
-        formData.lastName
-      );
+      const response = await AuthClient.register(formData);
       if (response?.data?.data) {
         setSuccess(true);
+        setTimeout(() => {
+          setSuccess(false);
+        }, 2000);
       } else {
         setErrMsg("Registration Failed");
       }
@@ -78,8 +89,8 @@ const Register = () => {
                   {success && (
                     <div ref={errRef} class="alert alert-success" role="alert">
                       Register Success{" "}
-                      <NavLink to="/login" className="btn btn-outline-dark">
-                        <i className="fa fa-sign-in me-1"></i> Login
+                      <NavLink to="/login" class="alert-link">
+                        Login
                       </NavLink>
                       .
                     </div>

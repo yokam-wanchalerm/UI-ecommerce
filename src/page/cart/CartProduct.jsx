@@ -27,10 +27,8 @@ const CartProduct = ({ cartProduct }) => {
   };
 
   const handleAdd = () => {
-    // Check product is exists
     const exist = cardItems.find((x) => x.id === cartProduct.id);
     if (exist) {
-      // Increase Quantity
       const newResult = cardItems.map((x) =>
         x.id === cartProduct.id
           ? { ...x, qty: x.qty + 1, sub_total: (x.qty + 1) * x.price }
@@ -81,7 +79,6 @@ const CartProduct = ({ cartProduct }) => {
           <button className="btn btn-outline-danger" onClick={handleRemove}>
             Remove
           </button>
-          {/* <button className="btn btn-light">Buy Now</button> */}
         </div>
       </div>
     </div>

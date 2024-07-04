@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import UserClient from "../../api/UserClient";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 const UserList = () => {
   const [data, setData] = useState([]);
@@ -22,10 +22,6 @@ const UserList = () => {
     getUserList();
   }, []);
 
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
-
   const deleteUser = async (userId) => {
     setLoading(true);
     try {
@@ -46,6 +42,22 @@ const UserList = () => {
 
   return (
     <div class="container">
+      <div class="row mt-5 mb-2">
+        <div class="col-md-6">
+          <div class="h3">User Management</div>
+        </div>
+        <div class="col-md-6 d-flex flex-row justify-content-end p-1 ">
+          <button
+            type="button"
+            class="btn btn-danger"
+            onClick={() => {
+              navigate("/user");
+            }}
+          >
+            Add User
+          </button>
+        </div>
+      </div>
       <table class="table table-bordered">
         <thead class="thead-dark">
           <tr>
@@ -105,7 +117,24 @@ const UserList = () => {
               })}
             </>
           ) : (
-            <p>Empty data</p>
+            <tr>
+              <td colspan="8">
+                <div class="d-flex align-items-center justify-content-center vh-50">
+                  <div class="text-center row d-flex flex-row justify-content-center">
+                    <div class="col-md-12 mt-2">
+                      <p class="fs-3">No Data Found</p>
+                      <p class="lead">
+                        You can add user{" "}
+                        <NavLink to="/user" class="alert-link">
+                          here
+                        </NavLink>
+                        .
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
           )}
         </tbody>
       </table>
