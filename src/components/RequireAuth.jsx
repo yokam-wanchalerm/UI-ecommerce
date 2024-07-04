@@ -4,15 +4,24 @@ import useAuth from "../hooks/useCommon";
 import TokenHelper from "../util/TokenHelper";
 
 const RequireAuth = () => {
-  // const { auth } = useAuth();
-  // const location = useLocation();
-  // const isAuthenticated = TokenHelper.isAuthenticated();
-  // console.log(auth?.role);
-  // return isAuthenticated ? (
-  //   <Outlet />
-  // ) : (
-  //   <Navigate to="/login" state={{ from: location }} replace />
-  // );
+  useAuth();
+  const location = useLocation();
+  const isAuthenticated = () => {
+    return !!localStorage.getItem("token");
+  };
+  const isAdmin = () => {
+    return !!(
+      TokenHelper.parseJwt(localStorage.getItem("token"))?.role === "ADMIN"
+    );
+  };
+
+  return isAdmin() ? (
+    <Outlet />
+  ) : isAuthenticated() ? (
+    <Navigate to="/unauthorized" state={{ from: location }} replace />
+  ) : (
+    <Navigate to="/login" state={{ from: location }} replace />
+  );
 };
 
 export default RequireAuth;

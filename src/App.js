@@ -10,8 +10,17 @@ import Products from "./page/product/Products";
 import Product from "./page/product/Product";
 import Cart from "./page/Cart";
 import Logout from "./page/Logout";
+import UserList from "./page/user/UserList";
+import { useEffect } from "react";
+import useCommon from "./hooks/useCommon";
+import TokenHelper from "./util/TokenHelper";
+import User from "./page/user/User";
 
 function App() {
+  const { setProfile } = useCommon();
+  useEffect(() => {
+    setProfile(TokenHelper.getFullName(localStorage.getItem("token")));
+  }, []);
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
@@ -22,9 +31,11 @@ function App() {
         <Route path="unauthorized" element={<Unauthorized />} />
 
         {/* we want to protect these routes */}
-        {/* <Route element={<RequireAuth />}>
-          <Route path="/" element={<Home />} />
-        </Route> */}
+        <Route element={<RequireAuth />}>
+          <Route path="/users" element={<UserList />} />
+          <Route path="/user/:id" element={<User page={"view"} />} />
+          <Route path="/user/edit/:id" element={<User page={"edit"} />} />
+        </Route>
         <Route path="products" element={<Products />} />
         <Route path="products/:id" element={<Product />} />
         <Route path="cart" element={<Cart />} />

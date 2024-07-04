@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import AuthClient from "../api/AuthClient";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import banner11 from "../assets/banner/banner11.jpg";
 
 const USER_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
@@ -13,7 +14,6 @@ const Register = () => {
     email: "",
     password: "",
   });
-  const navigate = useNavigate();
   const [success, setSuccess] = useState("");
   const [errMsg, setErrMsg] = useState("");
   const [loading, setLoading] = useState(false);
@@ -40,19 +40,22 @@ const Register = () => {
         formData.firstName,
         formData.lastName
       );
-
-      console.log(JSON.stringify(response?.data));
-      setSuccess(true);
-      setLoading(true);
+      if (response?.data?.data) {
+        setSuccess(true);
+      } else {
+        setErrMsg("Registration Failed");
+      }
+      setLoading(false);
     } catch (err) {
       if (!err?.response) {
         setErrMsg("No Server Response");
-      } else if (err.response?.status === 409) {
-        setErrMsg("Username Taken");
+      } else if (err?.response?.data?.message) {
+        setErrMsg(err?.response?.data?.message);
       } else {
         setErrMsg("Registration Failed");
       }
       errRef.current.focus();
+      setLoading(false);
     }
   };
 
@@ -61,107 +64,102 @@ const Register = () => {
       <div class="page-content page-container" id="page-content">
         <div class="padding">
           <div class="row">
-            <div class="col-md-3"></div>
             <div class="col-md-6">
-              {success ? (
-                <div class="card">
-                  <div class="card-header">Register Success</div>
-                  <div class="card-body">
-                    <button
-                      type="submit"
-                      class="btn btn-primary"
-                      onClick={() => navigate("/login")}
-                    >
-                      Login
-                    </button>
-                  </div>
+              <div class="card vertical-center">
+                <div class="card-header">
+                  <strong>Register your account</strong>
                 </div>
-              ) : (
-                <div class="card">
-                  <div class="card-header">
-                    <strong>Register your account</strong>
-                  </div>
-                  <div class="card-body">
-                    {errMsg && (
-                      <div ref={errRef} class="alert alert-danger" role="alert">
-                        {errMsg}
-                      </div>
-                    )}
-                    <form onSubmit={handleSubmit}>
-                      <div class="form-group mb-18">
-                        <label class="text-muted" for="firstName">
-                          First Name
-                        </label>
-                        <input
-                          type="text"
-                          class="form-control"
-                          name="firstName"
-                          value={formData.firstName}
-                          onChange={handleInputChange}
-                          required
-                          placeholder="Enter First Name"
-                        />
-                      </div>
-                      <div class="form-group mb-18">
-                        <label class="text-muted" for="lastName">
-                          Last Name
-                        </label>
-                        <input
-                          type="text"
-                          class="form-control"
-                          name="lastName"
-                          value={formData.lastName}
-                          onChange={handleInputChange}
-                          required
-                          placeholder="Enter Last Name"
-                        />
-                      </div>
-                      <div class="form-group mb-18">
-                        <label class="text-muted" for="email">
-                          Email
-                        </label>
-                        <input
-                          type="email"
-                          class="form-control"
-                          name="email"
-                          value={formData.email}
-                          onChange={handleInputChange}
-                          required
-                          placeholder="Enter Email"
-                        />
-                      </div>
-                      <div class="form-group mb-18">
-                        <label class="text-muted" for="password">
-                          Password
-                        </label>
-                        <input
-                          type="password"
-                          class="form-control"
-                          name="password"
-                          value={formData.password}
-                          onChange={handleInputChange}
-                          required
-                          placeholder="Enter Password"
-                        />
-                      </div>
+                <div class="card-body">
+                  {errMsg && (
+                    <div ref={errRef} class="alert alert-danger" role="alert">
+                      {errMsg}
+                    </div>
+                  )}
+                  {success && (
+                    <div ref={errRef} class="alert alert-success" role="alert">
+                      Register Success{" "}
+                      <NavLink to="/login" className="btn btn-outline-dark">
+                        <i className="fa fa-sign-in me-1"></i> Login
+                      </NavLink>
+                      .
+                    </div>
+                  )}
+                  <form onSubmit={handleSubmit}>
+                    <div class="form-group mb-18">
+                      <label class="text-muted" for="email">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="Enter Email"
+                      />
+                    </div>
+                    <div class="form-group mb-18">
+                      <label class="text-muted" for="firstName">
+                        First Name
+                      </label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        name="firstName"
+                        value={formData.firstName}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="Enter First Name"
+                      />
+                    </div>
+                    <div class="form-group mb-18">
+                      <label class="text-muted" for="lastName">
+                        Last Name
+                      </label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        name="lastName"
+                        value={formData.lastName}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="Enter Last Name"
+                      />
+                    </div>
+                    <div class="form-group mb-18">
+                      <label class="text-muted" for="password">
+                        Password
+                      </label>
+                      <input
+                        type="password"
+                        class="form-control"
+                        name="password"
+                        value={formData.password}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="Enter Password"
+                      />
+                    </div>
 
-                      <button type="submit" class="btn btn-primary">
-                        Register
-                        {loading && (
-                          <div
-                            class="spinner-border text-secondary"
-                            role="status"
-                          >
-                            <span class="sr-only">Loading...</span>
-                          </div>
-                        )}
-                      </button>
-                    </form>
-                  </div>
+                    <button type="submit" class="btn btn-primary">
+                      Register
+                      {loading && (
+                        <div
+                          class="spinner-border text-secondary"
+                          role="status"
+                        >
+                          <span class="sr-only">Loading...</span>
+                        </div>
+                      )}
+                    </button>
+                  </form>
                 </div>
-              )}
+              </div>
             </div>
-            <div class="col-md-3"></div>
+            <div class="col-md-6">
+              <img src={banner11} className="d-block w-100" alt="banner 1" />
+            </div>
           </div>
         </div>
       </div>

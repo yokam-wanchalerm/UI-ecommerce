@@ -1,15 +1,49 @@
 import axios from "./Axios";
 
-const USER_URL = "/users?search=";
+const ADMIN = "/admin";
+const ADMIN_USER = "/adminuser";
+const USER_PROFILE_URL = `${ADMIN_USER}/profile`;
+const ADMIN_USER_URL = `${ADMIN}/user`;
 
 class UserClient {
-  static async getAllUsers(token) {
-    try {
-      const response = await axios.get(USER_URL, {});
-      return response.data;
-    } catch (err) {
-      throw err;
-    }
+  static async getAllUsers(search) {
+    return await axios.get(`${ADMIN_USER_URL}s?search=${search || ""}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+  }
+
+  static async getUser(userId) {
+    return await axios.get(`${ADMIN_USER_URL}/${userId}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+  }
+
+  static async deleteUser(userId) {
+    return await axios.delete(`${ADMIN_USER_URL}/${userId}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+  }
+
+  static async updateUser(userId, userRequest) {
+    return await axios.put(
+      `${ADMIN_USER_URL}/${userId}`,
+      JSON.stringify(userRequest),
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
   }
 }
 

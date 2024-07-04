@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import AuthClient from "../api/AuthClient";
 import TokenHelper from "../util/TokenHelper";
 import useCommon from "../hooks/useCommon";
+import banner10 from "../assets/banner/banner10.jpg";
 
 const Login = () => {
   const { setProfile } = useCommon();
@@ -18,9 +19,11 @@ const Login = () => {
   const [user, setUser] = useState("");
   const [pwd, setPwd] = useState("");
   const [errMsg, setErrMsg] = useState("");
-
+  const isAuthenticated = () => {
+    return !!localStorage.getItem("token");
+  };
   useEffect(() => {
-    if (TokenHelper.isAuthenticated()) {
+    if (isAuthenticated()) {
       navigate("/logout");
     }
   }, []);
@@ -30,10 +33,7 @@ const Login = () => {
   }, [user, pwd]);
 
   const checkAutenticated = (accessToken) => {
-    var payload = TokenHelper.parseJwt(accessToken);
-    console.log(payload);
-    const fullName = payload?.firstName + " " + payload?.lastName;
-    setProfile(fullName);
+    setProfile(TokenHelper.getFullName(accessToken));
   };
 
   const handleSubmit = async (e) => {
@@ -41,19 +41,21 @@ const Login = () => {
 
     try {
       const response = await AuthClient.login(user, pwd);
-      const accessToken = response?.data?.accessToken;
+      const accessToken = response?.data?.data?.accessToken;
       if (accessToken) {
-        checkAutenticated(accessToken);
         localStorage.setItem("token", accessToken);
+        checkAutenticated(accessToken);
+        setUser("");
+        setPwd("");
+        navigate(from, { replace: true });
+      } else {
+        setErrMsg("Login Failed");
       }
-      setUser("");
-      setPwd("");
-      navigate(from, { replace: true });
     } catch (err) {
       if (!err?.response) {
         setErrMsg("No Server Response");
-      } else if (err.response?.status === 400) {
-        setErrMsg("Missing Username or Password");
+      } else if (err?.response?.data?.message) {
+        setErrMsg(err?.response?.data?.message);
       } else if (err.response?.status === 401) {
         setErrMsg("Unauthorized");
       } else {
@@ -67,9 +69,11 @@ const Login = () => {
     <div class="page-content page-container" id="page-content">
       <div class="padding">
         <div class="row">
-          <div class="col-md-3"></div>
           <div class="col-md-6">
-            <div class="card">
+            <img src={banner10} className="d-block w-100" alt="banner 1" />
+          </div>
+          <div class="col-md-6 ">
+            <div class="card vertical-center">
               <div class="card-header">
                 <strong>Login to your account</strong>
               </div>
@@ -107,10 +111,7 @@ const Login = () => {
                       onChange={(e) => setPwd(e.target.value)}
                       required
                       placeholder="Password"
-                    />{" "}
-                    <small id="passwordHelp" class="form-text text-muted">
-                      your password is saved in encrypted form
-                    </small>
+                    />
                   </div>
                   <button type="submit" class="btn btn-primary mt-50">
                     Login
@@ -119,7 +120,6 @@ const Login = () => {
               </div>
             </div>
           </div>
-          <div class="col-md-3"></div>
         </div>
       </div>
     </div>
