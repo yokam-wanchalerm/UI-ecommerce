@@ -36,9 +36,7 @@ const Product = () => {
     const getProduct = async () => {
       setLoading(true);
       const url = `https://fakestoreapi.com/products/${id}`;
-      console.log(url);
       const response = await fetch(url);
-      console.log(response);
       setProduct(await response.json());
       setLoading(false);
     };
