@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import AuthClient from "../api/AuthClient";
 import { NavLink } from "react-router-dom";
-import banner11 from "../assets/banner/banner11.jpg";
+import banner5 from "../assets/banner/banner5.jpg";
 
 const USER_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
@@ -169,7 +169,7 @@ const Register = () => {
               </div>
             </div>
             <div class="col-md-6">
-              <img src={banner11} className="d-block w-100" alt="banner 1" />
+              <img src={banner5} className="d-block w-100" alt="banner 1" />
             </div>
           </div>
         </div>

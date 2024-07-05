@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import AuthClient from "../api/AuthClient";
 import TokenHelper from "../util/TokenHelper";
 import useCommon from "../hooks/useCommon";
-import banner10 from "../assets/banner/banner10.jpg";
+import banner4 from "../assets/banner/banner4.jpg";
 
 const Login = () => {
   const { setProfile } = useCommon();
@@ -87,7 +87,7 @@ const Login = () => {
       <div class="padding">
         <div class="row">
           <div class="col-md-6">
-            <img src={banner10} className="d-block w-100" alt="banner 1" />
+            <img src={banner4} className="d-block w-100" alt="banner 1" />
           </div>
           <div class="col-md-6 ">
             <div class="card vertical-center">

@@ -191,7 +191,9 @@ const User = ({ page }) => {
               </div>
               <div class="col-xl-8">
                 <div class="card mb-4" style={{ height: "100%" }}>
-                  <div class="card-header">Account Details</div>
+                  <div class="card-header">
+                    Account {isViewMode ? <>Details</> : <>Edit</>}
+                  </div>
                   <div class="card-body">
                     {errMsg && (
                       <div class="alert alert-danger" role="alert">
