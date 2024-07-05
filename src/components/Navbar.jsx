@@ -48,7 +48,7 @@ const Navbar = () => {
                 </h5>
                 {isAdmin() && (
                   <NavLink to="/users" className="btn btn-outline-dark ms-2">
-                    <i className="fa fa-sign-in me-1"></i> Manage User
+                    <i className="fa fa-user me-1"></i> Manage User
                   </NavLink>
                 )}
 
